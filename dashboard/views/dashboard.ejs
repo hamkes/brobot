@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>
+    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('brobot.theme') || 'dark'); } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  </script>
 </head>
 <body class="dash-body">
 
@@ -37,6 +40,13 @@
         <button class="lang-toggle sidebar-lang" id="langToggle" type="button">
           <span class="lang-ar">العربية</span>
           <span class="lang-en">English</span>
+        </button>
+        <button class="theme-switch" type="button" data-theme-toggle aria-label="Theme">
+          <span class="theme-switch-label" data-i18n="theme_toggle">Theme</span>
+          <span class="theme-switch-track">
+            <span class="theme-opt theme-opt-light" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.7 4.7l1.6 1.6M17.7 17.7l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.7 19.3l1.6-1.6M17.7 6.3l1.6-1.6"/></svg></span>
+            <span class="theme-opt theme-opt-dark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></span>
+          </span>
         </button>
         <a class="sidebar-link" href="/" data-i18n="home">Home</a>
         <a class="sidebar-link" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer">
@@ -90,6 +100,7 @@
   <script>
     window.__USER__ = <%- userJson %>;
   </script>
+  <script src="/js/theme.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/ui.js"></script>
   <script src="/js/pages.js"></script>

@@ -6,6 +6,7 @@
   "scripts": {
     "bot": "node bot/index.js",
     "dashboard": "node dashboard/server.js",
+    "local": "node scripts/local.js",
     "dev": "concurrently -n BOT,WEB -c blue,green \"node bot/index.js\" \"node dashboard/server.js\"",
     "deploy": "node bot/deploy-commands.js",
     "start": "node bot/index.js"
@@ -24,7 +25,10 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.1.0",
+    "mongodb-memory-server": "^11.3.0"
   },
-  "engines": { "node": ">=18.0.0" }
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
