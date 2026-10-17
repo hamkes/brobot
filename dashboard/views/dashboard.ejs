@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body class="dash-body">
+
+  <div class="dash-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <a class="brand" href="/">
+          <span class="brand-badge" aria-hidden="true"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="brobotGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="48" height="48" rx="13" fill="url(#brobotGrad)"/><path d="M24 8.6v4.2" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="7.2" r="2.3" fill="#fff"/><rect x="12.8" y="15.4" width="22.4" height="18" rx="6.2" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="19.8" cy="24" r="2.2" fill="#fff"/><circle cx="28.2" cy="24" r="2.2" fill="#fff"/><path d="M20.6 28.6h6.8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>
+          <span class="brand-name" data-i18n="brand">Brobot</span>
+        </a>
+      </div>
+
+      <div class="sidebar-guild">
+        <button class="guild-picker" id="guildPicker" type="button">
+          <img class="guild-icon" id="guildIcon" alt="" src="" style="display:none">
+          <span class="guild-badge" id="guildBadge">?</span>
+          <span class="guild-name" id="guildName" data-i18n="select_server">Select a server</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="guild-menu" id="guildMenu" hidden></div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+      <div class="sidebar-footer">
+        <button class="lang-toggle sidebar-lang" id="langToggle" type="button">
+          <span class="lang-ar">العربية</span>
+          <span class="lang-en">English</span>
+        </button>
+        <a class="sidebar-link" href="/" data-i18n="home">Home</a>
+        <a class="sidebar-link" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer">
+          <svg class="nav-emoji" style="width:16px;height:16px;flex:none" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.5 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.9.08.08 0 0 1-.01-.13c.13-.09.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 0 0-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.02-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.41 0-1.34.96-2.42 2.16-2.42 1.21 0 2.18 1.09 2.16 2.42 0 1.33-.96 2.41-2.16 2.41Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.34.95-2.42 2.15-2.42 1.22 0 2.18 1.09 2.16 2.42 0 1.33-.94 2.41-2.16 2.41Z"/></svg>
+          <span data-i18n="invite_bot">Invite Bot</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="dash-main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="breadcrumbs">
+          <span class="crumb-group" id="crumbGroup"></span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-page" id="crumbPage" data-i18n="overview">Overview</span>
+        </div>
+        <div class="topbar-right">
+          <a class="btn btn-ghost btn-sm" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.5 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.9.08.08 0 0 1-.01-.13c.13-.09.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 0 0-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.02-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.41 0-1.34.96-2.42 2.16-2.42 1.21 0 2.18 1.09 2.16 2.42 0 1.33-.96 2.41-2.16 2.41Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.34.95-2.42 2.15-2.42 1.22 0 2.18 1.09 2.16 2.42 0 1.33-.94 2.41-2.16 2.41Z"/></svg>
+            <span data-i18n="invite_bot">Invite Bot</span>
+          </a>
+          <span class="bot-status" id="botStatus">
+            <span class="status-dot"></span>
+            <span data-i18n="checking">Checking…</span>
+          </span>
+          <div class="user-chip">
+            <img id="userAvatar" alt="" src="">
+            <span id="userName"></span>
+            <button class="icon-btn" id="logoutBtn" type="button" title="Logout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content" id="content">
+        <div class="loading-block">
+          <div class="spinner"></div>
+          <p data-i18n="loading">Loading…</p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+  <div class="overlay" id="overlay" hidden></div>
+
+  <script>
+    window.__USER__ = <%- userJson %>;
+  </script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/pages.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
