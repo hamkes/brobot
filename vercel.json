@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dashboard/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "dashboard/views/**",
+          "dashboard/public/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dashboard/server.js"
+    }
+  ]
+}

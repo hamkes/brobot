@@ -11,11 +11,14 @@ const { connectDatabase } = require('../bot/db');
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
 
-async function main() {
+let appPromise = null;
+
+async function createApp() {
   await connectDatabase();
 
   const app = express();
 
+  app.set('trust proxy', 1);
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
 
@@ -82,9 +85,17 @@ async function main() {
     res.status(500).redirect('/');
   });
 
-  app.listen(config.port, () => {
-    logger.success(`Dashboard running at ${config.dashboardUrl} (port ${config.port})`);
-  });
+  return app;
+}
+
+function getApp() {
+  if (!appPromise) {
+    appPromise = createApp().catch((err) => {
+      appPromise = null;
+      throw err;
+    });
+  }
+  return appPromise;
 }
 
 function requireLogin(req, res, next) {
@@ -92,7 +103,20 @@ function requireLogin(req, res, next) {
   next();
 }
 
-main().catch((err) => {
-  logger.error(`Dashboard failed to start: ${err.stack || err.message}`);
-  process.exit(1);
-});
+if (!process.env.VERCEL) {
+  getApp()
+    .then((app) => {
+      app.listen(config.port, () => {
+        logger.success(`Dashboard running at ${config.dashboardUrl} (port ${config.port})`);
+      });
+    })
+    .catch((err) => {
+      logger.error(`Dashboard failed to start: ${err.stack || err.message}`);
+      process.exit(1);
+    });
+}
+
+module.exports = async (req, res) => {
+  const app = await getApp();
+  return app(req, res);
+};
