@@ -161,7 +161,7 @@ Login with **Discord OAuth2**. Everything is grouped into a clean sidebar, fully
 
 ### Branding
 
-Brobot uses a **clean white** canvas with **modern violet** (`#7c3aed` → `#a855f7`) accents. The palette lives in a single `:root` block in `dashboard/public/css/style.css`, and the logo is an inline SVG mark (`dashboard/public/favicon.svg`) used across the landing page and sidebar.
+Brobot uses a **clean white** canvas with **modern violet** (`#5865f2` → `#eb459e`) accents. The palette lives in a single `:root` block in `dashboard/public/css/style.css`, and the logo is an inline SVG mark (`dashboard/public/favicon.svg`) used across the landing page and sidebar.
 
 ---
 
@@ -306,6 +306,22 @@ The bot writes a **heartbeat** (`BotStatus`) every 30s so the dashboard can show
 
 ---
 
+## 🎉 Giveaways (`/giveaway`)
+
+Persistent giveaways with button entries, role/level requirements, rerolls and restart recovery.
+
+| Command | Description |
+|---|---|
+| `/giveaway start prize duration [winners] [channel] [required_role] [required_level]` | Post a giveaway; duration like `30m`, `2h`, `3d`, `1w` (10s–60d) |
+| `/giveaway end id` | End immediately and draw winners (message ID or giveaway ID) |
+| `/giveaway reroll id [winners]` | Draw new winners for an ended giveaway |
+| `/giveaway list` | Active + recent giveaways in the server |
+
+- Entries are stored atomically (`$addToSet`), one per member.
+- Role and level requirements are re-checked when winners are drawn, so stale entries never win.
+- Active timers are restored on startup (`systems/giveaways.js`); overdue giveaways end immediately.
+- Winners are announced in the channel and the message embed is updated in place.
+- Requires the bot to have **Send Messages** + **Embed Links** in the target channel.
 ## 📜 License
 
 MIT — have fun, and make your server awesome. ✨

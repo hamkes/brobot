@@ -10,6 +10,7 @@ const { connectDatabase } = require('../bot/db');
 
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
+const siteRoutes = require('./routes/site');
 
 let appPromise = null;
 
@@ -54,10 +55,11 @@ async function createApp() {
 
   app.use('/auth', authRoutes);
   app.use('/api', apiRoutes);
+  app.use('/', siteRoutes);
 
   app.get('/', (req, res) => {
     res.render('index', {
-      title: '✨ Brobot',
+      title: '✨ BroBot',
       loggedIn: Boolean(req.session.user),
       user: req.session.user || null,
       loginUrl: '/auth/login',
@@ -67,7 +69,7 @@ async function createApp() {
 
   app.get('/dashboard', requireLogin, (req, res) => {
     res.render('dashboard', {
-      title: 'Dashboard • Brobot',
+      title: 'Dashboard • BroBot',
       user: req.session.user,
       userJson: JSON.stringify(req.session.user),
       inviteUrl: config.inviteUrl

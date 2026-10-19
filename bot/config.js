@@ -20,7 +20,7 @@ module.exports = {
       ? `https://discord.com/oauth2/authorize?client_id=${clientId}&permissions=8&integration_type=0&scope=bot`
       : DEFAULT_INVITE_URL),
   colors: {
-    primary: 0x7c3aed,
+    primary: 0x5865f2,
     success: 0x57f287,
     warning: 0xfee75c,
     danger: 0xed4245,

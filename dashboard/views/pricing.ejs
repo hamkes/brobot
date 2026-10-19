@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <%- include('partials/head', { title, description }) %>
+</head>
+<body class="landing-body">
+
+  <%- include('partials/nav', { loggedIn, loginUrl, inviteUrl, active }) %>
+
+  <main>
+    <section class="page-hero">
+      <h1 class="page-title" data-i18n="pricing_page_title">Pricing</h1>
+      <p class="page-sub" data-i18n="pricing_page_sub">Start free, upgrade whenever you need more. No hidden fees.</p>
+    </section>
+
+    <section class="section page-section">
+      <div class="pricing-grid">
+        <article class="pricing-card">
+          <h3 data-i18n="plan_free">Free</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li data-i18n="plan_free_1">All core modules</li>
+            <li data-i18n="plan_free_2">English & العربية</li>
+            <li data-i18n="plan_free_3">Community support</li>
+          </ul>
+          <a class="btn btn-ghost btn-block" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer" data-i18n="plan_cta_invite">Invite Brobot</a>
+        </article>
+        <article class="pricing-card pricing-featured">
+          <span class="pricing-badge" data-i18n="plan_popular">Popular</span>
+          <h3 data-i18n="plan_premium">Premium</h3>
+          <div class="price">$4.99<span data-i18n="per_month">/mo</span></div>
+          <ul>
+            <li data-i18n="plan_premium_1">Everything in Free</li>
+            <li data-i18n="plan_premium_2">VIP Protection & Anti-Raid+</li>
+            <li data-i18n="plan_premium_3">Notifications (Twitch / YouTube / Kick / Reddit)</li>
+            <li data-i18n="plan_premium_4">Priority support</li>
+          </ul>
+          <% if (loggedIn) { %>
+            <a class="btn btn-primary btn-block" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
+          <% } else { %>
+            <a class="btn btn-primary btn-block" href="<%= loginUrl %>" data-i18n="login_discord">Login with Discord</a>
+          <% } %>
+        </article>
+        <article class="pricing-card">
+          <h3 data-i18n="plan_ultra">Ultra</h3>
+          <div class="price">$9.99<span data-i18n="per_month">/mo</span></div>
+          <ul>
+            <li data-i18n="plan_ultra_1">Everything in Premium</li>
+            <li data-i18n="plan_ultra_2">Unlimited everything</li>
+            <li data-i18n="plan_ultra_3">Early access features</li>
+          </ul>
+          <% if (loggedIn) { %>
+            <a class="btn btn-ghost btn-block" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
+          <% } else { %>
+            <a class="btn btn-ghost btn-block" href="<%= loginUrl %>" data-i18n="login_discord">Login with Discord</a>
+          <% } %>
+        </article>
+      </div>
+      <p class="pricing-note" data-i18n="pricing_note">Prices are in USD. You can cancel at any time — see our Refund Policy.</p>
+    </section>
+
+    <section class="section page-section">
+      <h2 class="section-title" data-i18n="pricing_faq_title">Frequently asked questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary data-i18n="pricing_faq_q1">Is the Free plan really free?</summary>
+          <p data-i18n="pricing_faq_a1">Yes — all core modules are free forever, with no credit card required.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="pricing_faq_q2">How do I upgrade?</summary>
+          <p data-i18n="pricing_faq_a2">Log in with Discord, open the dashboard and choose a plan from the Premium page.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="pricing_faq_q3">What happens if I cancel?</summary>
+          <p data-i18n="pricing_faq_a3">You keep the paid features until the end of your billing period, then return to the Free plan.</p>
+        </details>
+        <details class="faq-item">
+          <summary data-i18n="pricing_faq_q4">Do you offer refunds?</summary>
+          <p data-i18n="pricing_faq_a4">Yes, under the conditions described in our Refund Policy.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

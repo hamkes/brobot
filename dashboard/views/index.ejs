@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
-  <meta name="description" content="Brobot — an intuitive, beginner-friendly Discord bot with moderation, welcome messages and auto-roles. Dual language (English / العربية).">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <script>
-    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('brobot.theme') || 'dark'); } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
-  </script>
+<%- include('partials/head', { title, description: 'BroBot — a Discord bot and dashboard for moderation, welcome messages, auto-roles, tickets and giveaways. English & العربية.' }) %>
 </head>
 <body class="landing-body">
 
   <header class="landing-nav">
     <div class="landing-nav-inner">
       <a class="brand" href="/">
-        <span class="brand-badge" aria-hidden="true"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="brobotGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="48" height="48" rx="13" fill="url(#brobotGrad)"/><path d="M24 8.6v4.2" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="7.2" r="2.3" fill="#fff"/><rect x="12.8" y="15.4" width="22.4" height="18" rx="6.2" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="19.8" cy="24" r="2.2" fill="#fff"/><circle cx="28.2" cy="24" r="2.2" fill="#fff"/><path d="M20.6 28.6h6.8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>
-        <span class="brand-name" data-i18n="brand">Brobot</span>
+        <span class="brand-badge" aria-hidden="true"><img src="/img/brobot-logo-96.png" alt="" width="34" height="34" decoding="async"></span>
+        <span class="brand-name" data-i18n="brand">BroBot</span>
       </a>
       <nav class="landing-links">
         <a href="#features" data-i18n="nav_features">Features</a>
         <a href="#modules" data-i18n="nav_modules">Modules</a>
-        <a href="#premium" data-i18n="nav_premium">Premium</a>
+        <a href="/commands" data-i18n="nav_commands">Commands</a>
+        <a href="/pricing" data-i18n="nav_pricing">Pricing</a>
       </nav>
       <div class="landing-actions">
         <button class="theme-switch" type="button" data-theme-toggle aria-label="Theme">
@@ -55,28 +45,71 @@
   </header>
 
   <main>
-    <section class="hero">
+    <!-- ---------------- HERO ---------------- -->
+    <section class="hero lp-hero">
       <div class="hero-glow" aria-hidden="true"></div>
-      <span class="hero-pill" data-i18n="hero_pill">✨ Simple • Intuitive • Powerful</span>
-      <h1 class="hero-title">
-        <span data-i18n="hero_title_1">Your server, perfectly managed with</span>
-        <span class="gradient-text">Brobot</span>
-      </h1>
-      <p class="hero-subtitle" data-i18n="hero_subtitle">
-        An effortless setup for moderation, welcome messages and auto-roles. Everything beginners need — without the complexity.
-      </p>
-      <div class="hero-actions">
-        <% if (loggedIn) { %>
-          <a class="btn btn-primary btn-lg" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
-        <% } else { %>
-          <a class="btn btn-primary btn-lg" href="<%= loginUrl %>" data-i18n="login_discord">Login with Discord</a>
-        <% } %>
-        <a class="btn btn-ghost btn-lg" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer">
-          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.5 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.9.08.08 0 0 1-.01-.13c.13-.09.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 0 0-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.02-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.41 0-1.34.96-2.42 2.16-2.42 1.21 0 2.18 1.09 2.16 2.42 0 1.33-.96 2.41-2.16 2.41Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.34.95-2.42 2.15-2.42 1.22 0 2.18 1.09 2.16 2.42 0 1.33-.94 2.41-2.16 2.41Z"/></svg>
-          <span data-i18n="invite_bot">Invite Bot</span>
-        </a>
-        <a class="btn btn-ghost btn-lg" href="#features" data-i18n="see_features">See Features</a>
+      <div class="lp-hero-grid">
+        <div class="lp-hero-copy">
+          <span class="hero-pill" data-i18n="hero_pill">✨ Simple • Intuitive • Powerful</span>
+          <h1 class="hero-title">
+            <span data-i18n="hero_title_1">Your server, perfectly managed with</span>
+            <span class="gradient-text">BroBot</span>
+          </h1>
+          <p class="hero-subtitle" data-i18n="hero_subtitle">
+            An effortless setup for moderation, welcome messages and auto-roles. Everything beginners need — without the complexity.
+          </p>
+          <div class="hero-actions">
+            <% if (loggedIn) { %>
+              <a class="btn btn-primary btn-lg" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
+            <% } else { %>
+              <a class="btn btn-primary btn-lg" href="<%= loginUrl %>" data-i18n="login_discord">Login with Discord</a>
+            <% } %>
+            <a class="btn btn-ghost btn-lg" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.87-.6 1.25a18.3 18.3 0 0 0-5.5 0 12.6 12.6 0 0 0-.61-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.04.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.9.08.08 0 0 1-.01-.13c.13-.09.25-.19.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01c.12.1.25.2.37.29a.08.08 0 0 1-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 0 0-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6.02-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.41 0-1.34.96-2.42 2.16-2.42 1.21 0 2.18 1.09 2.16 2.42 0 1.33-.96 2.41-2.16 2.41Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.34.95-2.42 2.15-2.42 1.22 0 2.18 1.09 2.16 2.42 0 1.33-.94 2.41-2.16 2.41Z"/></svg>
+              <span data-i18n="invite_bot">Invite Bot</span>
+            </a>
+          </div>
+          <ul class="lp-points">
+            <li data-i18n="hero_point_1">Ready in under a minute</li>
+            <li data-i18n="hero_point_2">English &amp; العربية</li>
+            <li data-i18n="hero_point_3">Free core, no credit card</li>
+          </ul>
+        </div>
+
+        <div class="lp-hero-visual" aria-hidden="true">
+          <div class="lp-mock">
+            <div class="lp-mock-bar"><i></i><i></i><i></i><em>dashboard.brobot</em></div>
+            <div class="lp-mock-body">
+              <div class="lp-mock-side">
+                <div class="lp-mock-item is-active"><b>📊</b></div>
+                <div class="lp-mock-item"><b>👋</b></div>
+                <div class="lp-mock-item"><b>🤖</b></div>
+                <div class="lp-mock-item"><b>🛡️</b></div>
+                <div class="lp-mock-item"><b>🎉</b></div>
+                <div class="lp-mock-item"><b>🎫</b></div>
+              </div>
+              <div class="lp-mock-main">
+                <div class="lp-kpis">
+                  <div class="lp-kpi"><b data-stat="guilds">—</b><span data-i18n="stat_servers">Servers</span></div>
+                  <div class="lp-kpi"><b data-stat="users">—</b><span data-i18n="stat_users">Users</span></div>
+                  <div class="lp-kpi"><b data-stat="commands">—</b><span data-i18n="stat_commands">Commands</span></div>
+                </div>
+                <div class="lp-chart">
+                  <span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span>
+                  <span style="height:78%"></span><span style="height:56%"></span><span style="height:88%"></span>
+                  <span style="height:70%"></span><span style="height:96%"></span>
+                </div>
+                <div class="lp-rows">
+                  <div class="lp-row"><span></span><i class="on"></i></div>
+                  <div class="lp-row"><span></span><i class="on"></i></div>
+                  <div class="lp-row"><span></span><i></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div class="hero-stats">
         <div class="hero-stat"><strong data-stat="guilds">—</strong><span data-i18n="stat_servers">Servers</span></div>
         <div class="hero-stat"><strong data-stat="users">—</strong><span data-i18n="stat_users">Users</span></div>
@@ -85,6 +118,7 @@
       </div>
     </section>
 
+    <!-- ---------------- FEATURES ---------------- -->
     <section class="section" id="features">
       <h2 class="section-title" data-i18n="features_title">Everything you need, made simple</h2>
       <p class="section-subtitle" data-i18n="features_subtitle">Core features designed for beginners and busy admins.</p>
@@ -96,7 +130,7 @@
         </article>
         <article class="feature-card">
           <div class="feature-icon">👋</div>
-          <h3 data-i18n="feature_welcome">Welcome & Goodbye</h3>
+          <h3 data-i18n="feature_welcome">Welcome &amp; Goodbye</h3>
           <p data-i18n="feature_welcome_desc">Beautiful welcome cards with {user}, {server} and {memberCount} placeholders.</p>
         </article>
         <article class="feature-card">
@@ -105,9 +139,9 @@
           <p data-i18n="feature_autorole_desc">Instantly give preset roles to new members the moment they join.</p>
         </article>
         <article class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3 data-i18n="feature_dashboard">Web Dashboard</h3>
-          <p data-i18n="feature_dashboard_desc">An ultra-clean dashboard with English & العربية support, RTL ready.</p>
+          <div class="feature-icon">🎉</div>
+          <h3 data-i18n="feature_giveaways">Giveaways</h3>
+          <p data-i18n="feature_giveaways_desc">Persistent giveaways with button entries, role requirements and one-click rerolls.</p>
         </article>
         <article class="feature-card">
           <div class="feature-icon">🎫</div>
@@ -115,19 +149,73 @@
           <p data-i18n="feature_tickets_desc">Support tickets with buttons, claiming and private channels.</p>
         </article>
         <article class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3 data-i18n="feature_dashboard">Web Dashboard</h3>
+          <p data-i18n="feature_dashboard_desc">An ultra-clean dashboard with English &amp; العربية support, RTL ready.</p>
+        </article>
+        <article class="feature-card">
           <div class="feature-icon">⭐</div>
-          <h3 data-i18n="feature_leveling">Leveling & Starboard</h3>
+          <h3 data-i18n="feature_leveling">Leveling &amp; Starboard</h3>
           <p data-i18n="feature_leveling_desc">XP, rank cards, role rewards — plus a starboard for your best messages.</p>
         </article>
       </div>
     </section>
 
+    <!-- ---------------- HOW IT WORKS ---------------- -->
+    <section class="section lp-how" id="how">
+      <h2 class="section-title" data-i18n="how_title">How it works</h2>
+      <p class="section-subtitle" data-i18n="how_sub">Three steps from invite to a fully managed server.</p>
+      <div class="lp-steps">
+        <article class="lp-step">
+          <span class="lp-step-num">1</span>
+          <h3 data-i18n="how_1_t">Invite BroBot</h3>
+          <p data-i18n="how_1_d">Add the bot with one click. Administrator is easiest, or pick individual permissions.</p>
+        </article>
+        <article class="lp-step">
+          <span class="lp-step-num">2</span>
+          <h3 data-i18n="how_2_t">Log in with Discord</h3>
+          <p data-i18n="how_2_d">The dashboard lists only the servers where you have Manage Server.</p>
+        </article>
+        <article class="lp-step">
+          <span class="lp-step-num">3</span>
+          <h3 data-i18n="how_3_t">Toggle what you need</h3>
+          <p data-i18n="how_3_d">Welcome, auto-roles, automod, tickets and giveaways — no commands required.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ---------------- GIVEAWAYS ---------------- -->
+    <section class="section lp-giveaway" id="giveaways">
+      <div class="lp-giveaway-card">
+        <div class="lp-giveaway-copy">
+          <span class="lp-badge" data-i18n="give_badge">New</span>
+          <h2 data-i18n="give_title">Giveaways built in</h2>
+          <p data-i18n="give_sub">Run persistent giveaways with role or level requirements, automatic winner drawing and one-click rerolls.</p>
+          <ul class="lp-check">
+            <li data-i18n="give_b1">Button entries with duplicate protection</li>
+            <li data-i18n="give_b2">Role and level requirements</li>
+            <li data-i18n="give_b3">Restart-safe timers and rerolls</li>
+          </ul>
+          <a class="btn btn-primary" href="/commands" data-i18n="nav_commands">Commands</a>
+        </div>
+        <div class="lp-giveaway-visual" aria-hidden="true">
+          <div class="lp-ticket">
+            <div class="lp-ticket-top">🎉 <b>Nitro 1 month</b></div>
+            <div class="lp-ticket-meta">Ends in 2h · 128 entries</div>
+            <div class="lp-ticket-btn">Enter giveaway</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------- MODULES ---------------- -->
     <section class="section" id="modules">
       <h2 class="section-title" data-i18n="modules_title">All modules</h2>
-      <p class="section-subtitle" data-i18n="modules_subtitle">Every Brobot module, nicely organized.</p>
+      <p class="section-subtitle" data-i18n="modules_subtitle">Every BroBot module, nicely organized.</p>
       <div class="module-grid" id="moduleGrid"></div>
     </section>
 
+    <!-- ---------------- PRICING ---------------- -->
     <section class="section" id="premium">
       <h2 class="section-title" data-i18n="premium_title">Get Premium</h2>
       <p class="section-subtitle" data-i18n="premium_subtitle">Support development and unlock more.</p>
@@ -137,7 +225,7 @@
           <div class="price">$0</div>
           <ul>
             <li data-i18n="plan_free_1">All core modules</li>
-            <li data-i18n="plan_free_2">English & العربية</li>
+            <li data-i18n="plan_free_2">English &amp; العربية</li>
             <li data-i18n="plan_free_3">Community support</li>
           </ul>
         </article>
@@ -147,7 +235,7 @@
           <div class="price">$4.99<span data-i18n="per_month">/mo</span></div>
           <ul>
             <li data-i18n="plan_premium_1">Everything in Free</li>
-            <li data-i18n="plan_premium_2">VIP Protection & Anti-Raid+</li>
+            <li data-i18n="plan_premium_2">VIP Protection &amp; Anti-Raid+</li>
             <li data-i18n="plan_premium_3">Notifications (Twitch / YouTube / Kick / Reddit)</li>
             <li data-i18n="plan_premium_4">Priority support</li>
           </ul>
@@ -161,6 +249,29 @@
             <li data-i18n="plan_ultra_3">Early access features</li>
           </ul>
         </article>
+      </div>
+    </section>
+
+    <!-- ---------------- FAQ ---------------- -->
+    <section class="section lp-faq" id="faq">
+      <h2 class="section-title" data-i18n="faq_title">Frequently asked questions</h2>
+      <div class="lp-faq-list">
+        <details>
+          <summary data-i18n="faq_q1">Is BroBot free?</summary>
+          <p data-i18n="faq_a1">Yes — every core module is free. Premium adds VIP Protection, notification feeds and priority support.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq_q2">Do I need to write code?</summary>
+          <p data-i18n="faq_a2">No. Everything is configured from the dashboard with toggles, dropdowns and live previews.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq_q3">Which permissions does it need?</summary>
+          <p data-i18n="faq_a3">Administrator is easiest. At minimum: Manage Roles, Manage Channels, Kick, Ban, Moderate Members and Manage Messages.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq_q4">Does it support Arabic?</summary>
+          <p data-i18n="faq_a4">Yes — the dashboard and bot messages support English and العربية with a full RTL layout.</p>
+        </details>
       </div>
     </section>
 
@@ -181,12 +292,6 @@
     </section>
   </main>
 
-  <footer class="landing-footer">
-    <span>✨ Brobot — <span data-i18n="footer_tagline">Intuitive Discord management for everyone</span></span>
-  </footer>
-
-  <script src="/js/theme.js"></script>
-  <script src="/js/i18n.js"></script>
-  <script src="/js/app.js"></script>
+  <%- include('partials/footer') %>
 </body>
 </html>

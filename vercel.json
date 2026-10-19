@@ -7,7 +7,9 @@
       "config": {
         "includeFiles": [
           "dashboard/views/**",
-          "dashboard/public/**"
+          "dashboard/public/**",
+          "dashboard/data/**",
+          "bot/commands/**"
         ]
       }
     }

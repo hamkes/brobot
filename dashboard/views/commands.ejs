@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <%- include('partials/head', { title, description }) %>
+</head>
+<body class="landing-body">
+
+  <%- include('partials/nav', { loggedIn, loginUrl, inviteUrl, active }) %>
+
+  <main>
+    <section class="page-hero">
+      <h1 class="page-title" data-i18n="cmd_page_title">Commands</h1>
+      <p class="page-sub" data-i18n="cmd_page_sub">Every Brobot slash command — grouped by category. Type <code>/</code> in Discord to use them.</p>
+      <div class="cmd-search-wrap">
+        <input id="cmdSearch" class="cmd-search" type="search" data-i18n-placeholder="cmd_search" placeholder="Search commands…">
+      </div>
+    </section>
+
+    <section class="section page-section">
+      <p class="cmd-count"><strong id="cmdCount"><%= groups.reduce((n, g) => n + g.commands.length, 0) %></strong> <span data-i18n="cmd_unit">commands</span></p>
+
+      <% for (const group of groups) { %>
+        <div class="cmd-group">
+          <h2 class="cmd-group-title" data-i18n="group_<%= group.category %>"><%= group.category %></h2>
+          <div class="cmd-table">
+            <% for (const cmd of group.commands) { %>
+              <div class="cmd-row" data-search="<%= (cmd.name + ' ' + cmd.description + ' ' + cmd.subcommands.join(' ')).toLowerCase() %>">
+                <div class="cmd-main">
+                  <code class="cmd-name"><%= cmd.name %></code>
+                  <span class="cmd-desc"><%= cmd.description %></span>
+                </div>
+                <% if (cmd.subcommands.length) { %>
+                  <div class="cmd-subs">
+                    <% for (const sub of cmd.subcommands) { %><span class="cmd-chip"><%= sub %></span><% } %>
+                  </div>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+      <p class="cmd-empty" id="cmdEmpty" hidden data-i18n="cmd_empty">No commands match your search.</p>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    (function () {
+      const input = document.getElementById('cmdSearch');
+      if (!input) return;
+      const rows = Array.from(document.querySelectorAll('.cmd-row'));
+      const groups = Array.from(document.querySelectorAll('.cmd-group'));
+      const empty = document.getElementById('cmdEmpty');
+      const count = document.getElementById('cmdCount');
+
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        let visible = 0;
+        rows.forEach((row) => {
+          const show = !q || row.dataset.search.includes(q);
+          row.hidden = !show;
+          if (show) visible++;
+        });
+        groups.forEach((group) => {
+          const any = Array.from(group.querySelectorAll('.cmd-row')).some((r) => !r.hidden);
+          group.hidden = !any;
+        });
+        empty.hidden = visible > 0;
+        if (count) count.textContent = visible;
+      });
+    })();
+  </script>
+</body>
+</html>

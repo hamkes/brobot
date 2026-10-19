@@ -24,25 +24,22 @@ function loadEvents(client) {
         continue;
       }
 
-      const names = [event.name, ...(event.aliases || [])];
-      const seen = new Set();
+      const names = [...new Set([event.name, ...(event.aliases || [])])];
+
+      const handler = (...args) => {
+        if (event.once) {
+          if (handler._fired) return;
+          handler._fired = true;
+        }
+        Promise.resolve(event.execute(...args)).catch((err) => {
+          logger.error(`Event ${handler.eventName} failed: ${err.stack || err.message}`);
+        });
+      };
+      handler.eventName = event.name;
 
       for (const name of names) {
-        if (seen.has(name)) continue;
-        seen.add(name);
-
-        const wrapped = (...args) => {
-          if (event.once) {
-            if (wrapped._fired) return;
-            wrapped._fired = true;
-          }
-          Promise.resolve(event.execute(...args)).catch((err) => {
-            logger.error(`Event ${name} failed: ${err.stack || err.message}`);
-          });
-        };
-
-        if (event.once) client.once(name, wrapped);
-        else client.on(name, wrapped);
+        if (event.once) client.once(name, handler);
+        else client.on(name, handler);
       }
 
       count++;

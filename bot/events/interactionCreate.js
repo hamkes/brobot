@@ -1,6 +1,7 @@
 const { MessageFlags } = require('discord.js');
 const { handleTicketButton } = require('../systems/tickets');
 const { errorEmbed } = require('../utils/helpers');
+const { buildSavedEmbed } = require('../utils/savedEmbed');
 const logger = require('../utils/logger');
 
 module.exports = {
@@ -34,6 +35,11 @@ async function handleButton(interaction) {
 
   if (scope === 'ticket') return handleTicketButton(interaction);
 
+  if (scope === 'giveaway') {
+    const { handleGiveawayButton } = require('../systems/giveaways');
+    return handleGiveawayButton(interaction);
+  }
+
   if (scope === 'selfrole') {
     const roleId = interaction.customId.split(':')[1];
     const role = interaction.guild.roles.cache.get(roleId);
@@ -54,7 +60,13 @@ async function handleButton(interaction) {
   }
 
   if (scope === 'embed') {
-    return interaction.reply({ content: 'Embed builder preview — configure from the dashboard.', ephemeral: true });
+    const { Guild } = require('../db');
+    const settings = await Guild.findOne({ guildId: interaction.guild.id }).lean();
+    const payload = buildSavedEmbed(settings, { thumbnailUrl: interaction.guild.iconURL({ size: 256 }) });
+    if (!payload) {
+      return interaction.reply({ content: 'No embed configured yet — set it up from the dashboard (Embeds page).', ephemeral: true });
+    }
+    return interaction.reply({ ...payload, ephemeral: true });
   }
 }
 

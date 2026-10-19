@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <%- include('partials/head', { title, description }) %>
+</head>
+<body class="landing-body">
+
+  <%- include('partials/nav', { loggedIn, loginUrl, inviteUrl, active }) %>
+
+  <main>
+    <section class="page-hero feature-hero">
+      <span class="feature-hero-emoji" aria-hidden="true"><%= feature.emoji %></span>
+      <h1 class="page-title" data-i18n="<%= feature.key %>_title">Feature</h1>
+      <p class="page-sub" data-i18n="<%= feature.key %>_sub">Feature overview.</p>
+      <div class="hero-actions">
+        <% if (loggedIn) { %>
+          <a class="btn btn-primary btn-lg" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
+        <% } else { %>
+          <a class="btn btn-primary btn-lg" href="<%= loginUrl %>" data-i18n="login_discord">Login with Discord</a>
+        <% } %>
+        <a class="btn btn-ghost btn-lg" href="/" data-i18n="feat_back">Back to home</a>
+      </div>
+    </section>
+
+    <section class="section page-section">
+      <div class="feature-grid feature-grid-detail">
+        <% for (let i = 1; i <= feature.points; i++) { %>
+          <article class="feature-card">
+            <h3 data-i18n="<%= feature.key %>_p<%= i %>_t">Point</h3>
+            <p data-i18n="<%= feature.key %>_p<%= i %>_d">Description</p>
+          </article>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

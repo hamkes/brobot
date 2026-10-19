@@ -20,7 +20,10 @@ module.exports = {
             '`/kick` — kick a member',
             '`/mute` `/unmute` — Discord timeouts',
             '`/clear` — bulk delete messages',
-            '`/warn` `/warnings` `/clearwarns` — warning system'
+            '`/warn` `/warnings` `/clearwarns` — warning system',
+            '`/setnick` `/role` — nicknames & roles',
+            '`/vkick` `/move` `/lock` `/unlock` `/slowmode` — channel control',
+            '`/points` — manage member points'
           ].join('\n')
         },
         {
@@ -29,7 +32,10 @@ module.exports = {
             '`/ping` — bot latency',
             '`/avatar` `/userinfo` `/serverinfo` — info commands',
             '`/poll` — quick reaction polls',
-            '`/rank` — your level card',
+            '`/rank` `/top` `/profile` — level cards & leaderboards',
+            '`/roles` `/moveme` `/short` — server tools',
+            '`/credits` `/rep` — economy',
+            '`/colors` `/color` — self-assignable colors',
             '`/stats` `/ticket-panel` — counters & tickets setup'
           ].join('\n')
         },
@@ -37,7 +43,9 @@ module.exports = {
           name: '⚙️ Setup / الإعداد',
           value: [
             '`/welcome` — welcome & goodbye messages',
-            '`/autorole` — automatic roles for new members'
+            '`/autorole` — automatic roles for new members',
+            '`/embed` — post the embed saved from the dashboard',
+            '`/setxp` `/setlevel` — manage member levels'
           ].join('\n')
         }
       )

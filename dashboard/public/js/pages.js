@@ -187,32 +187,34 @@
   }
 
   function renderEmbeds(ctx) {
+    const s = ctx.settings;
+    const saved = s.embed || {};
     const node = UI.el(`<div>${UI.pageHead('em_title', 'em_desc')}</div>`);
 
     const body = `
       <div class="form-grid">
         <div class="full">
-          ${UI.textField('embed.content', t('em_content'), t('em_placeholder_hint'), '', 'Hello {user.mention}!')}
+          ${UI.textField('embed.content', t('em_content'), t('em_placeholder_hint'), saved.content || '', 'Hello {user.mention}!')}
         </div>
         <div class="full">
           ${placeholderChips('embed.content')}
         </div>
-        ${UI.textField('embed.title', t('em_embed_title'), '', t('wc_title_field'))}
-        ${UI.colorField('embed.color', t('em_color'), '#5865F2')}
+        ${UI.textField('embed.title', t('em_embed_title'), t('wc_title_field'), saved.title || '')}
+        ${UI.colorField('embed.color', t('em_color'), saved.color || '#5865F2')}
         <div class="full">
-          ${UI.textareaField('embed.description', t('em_embed_desc'), t('em_placeholder_hint'), t('wc_message'))}
+          ${UI.textareaField('embed.description', t('em_embed_desc'), t('em_placeholder_hint'), saved.description || '')}
         </div>
         <div class="full">
           ${placeholderChips('embed.description')}
         </div>
-        ${UI.textField('embed.image', t('em_image'), '', 'https://i.imgur.com/...jpg')}
-        ${UI.textField('embed.footer', t('em_footer'), '', '✨ Brobot')}
+        ${UI.textField('embed.image', t('em_image'), 'https://i.imgur.com/...jpg', saved.image || '')}
+        ${UI.textField('embed.footer', t('em_footer'), '✨ Brobot', saved.footer || '')}
         <div class="full">
-          ${UI.toggleField('embed.thumbnail', t('em_thumbnail'), '', true)}
+          ${UI.toggleField('embed.thumbnail', t('em_thumbnail'), '', Boolean(saved.thumbnail))}
         </div>
       </div>`;
 
-    node.appendChild(UI.el(UI.card(t('em_title'), '', body)));
+    node.appendChild(UI.el(UI.card(t('em_title'), '', body, UI.saveButton('embed'))));
 
     node.appendChild(
       UI.el(UI.card(t('em_preview_title'), '',
@@ -229,6 +231,7 @@
       footer: 'embed.footer',
       thumbnail: 'embed.thumbnail'
     });
+    bindSave(node, ctx, ['embed'], undefined, 'embed');
 
     node.querySelector('[data-copy-json]').addEventListener('click', () => {
       const cfg = UI.gather(node).embed || {};

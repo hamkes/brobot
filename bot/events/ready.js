@@ -43,6 +43,12 @@ module.exports = {
     await refreshCounters();
     setInterval(refreshCounters, 5 * 60 * 1000);
 
+    try {
+      await require('../systems/giveaways').restore(client);
+    } catch (err) {
+      logger.warn('Giveaway restore skipped: ' + err.message);
+    }
+
     logger.info(`Serving ${client.guilds.cache.size} guild(s), ${client.users.cache.size} cached users`);
   }
 };

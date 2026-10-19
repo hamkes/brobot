@@ -20,6 +20,8 @@ const DashLog = require('../models/DashLog');
 const Level = require('../models/Level');
 const Ticket = require('../models/Ticket');
 const BotStatus = require('../models/BotStatus');
+const Economy = require('../models/Economy');
+const Giveaway = require('../models/Giveaway');
 
 module.exports = {
   connectDatabase,
@@ -29,5 +31,7 @@ module.exports = {
   DashLog,
   Level,
   Ticket,
-  BotStatus
+  BotStatus,
+  Economy,
+  Giveaway
 };

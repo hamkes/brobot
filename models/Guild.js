@@ -124,6 +124,19 @@ const selfRolesSchema = new mongoose.Schema({
   roles: { type: [String], default: [] }
 }, { _id: false });
 
+const embedSchema = new mongoose.Schema({
+  enabled: { type: Boolean, default: false },
+  name: { type: String, default: 'Announcement' },
+  channelId: { type: String, default: null },
+  content: { type: String, default: '' },
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
+      color: { type: String, default: '#5865f2' },
+  image: { type: String, default: null },
+  footer: { type: String, default: '' },
+  thumbnail: { type: Boolean, default: false }
+}, { _id: false });
+
 const notificationsSchema = new mongoose.Schema({
   twitch: {
     type: [{ channelId: String, streamer: String, message: { type: String, default: '🔴 **{streamer}** is now live!' } }],
@@ -167,6 +180,7 @@ const guildSchema = new mongoose.Schema({
   starboard: { type: starboardSchema, default: () => ({}) },
   tempChannels: { type: tempChannelsSchema, default: () => ({}) },
   selfRoles: { type: selfRolesSchema, default: () => ({}) },
+  embed: { type: embedSchema, default: () => ({}) },
   notifications: { type: notificationsSchema, default: () => ({}) },
   autoroles: { type: [String], default: [] },
   autorolesForBots: { type: Boolean, default: false },
