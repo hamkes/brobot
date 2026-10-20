@@ -346,6 +346,22 @@ Added after a feature-level gap analysis against ProBot-style bots
 - Economy and levels stay **per-server** (Brobot's design), and `/daily`'s
   streak bonus rewards regulars with no paid tiers.
 
+## 👤 Personal Dashboard & Credits Store (v1.2)
+
+- **`/my` — a dashboard for members, not just admins.** After logging in
+  with Discord, every member gets their own page: cards for credits,
+  level, server rank, reputation and voice level, a server picker,
+  Top 100 leaderboards (XP / richest / reputation) and a web
+  **daily-claim button** that shares one implementation with `/daily`
+  (`bot/systems/economyService.js`), so streaks can never drift.
+- **Credits Store** (on `/my`): 8 original gradient profile backgrounds
+  and 6 badges (`models/storeCatalog.js`), bought per-server with the
+  credits earned from `/daily`. The equipped background and owned
+  badges appear on the member's `/profile` card in Discord.
+- **Landing v2**: a centered hero — pill, large gradient headline, dual
+  CTAs, the product mock below and live stats — with Brobot's own
+  bilingual (EN/AR) copy throughout.
+
 ## 📜 License
 
 MIT — have fun, and make your server awesome. ✨

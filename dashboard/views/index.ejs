@@ -33,6 +33,7 @@
           <span data-i18n="invite_bot">Invite Bot</span>
         </a>
         <% if (loggedIn) { %>
+          <a class="btn btn-ghost" href="/my" data-i18n="nav_my">My Profile</a>
           <a class="btn btn-primary" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
         <% } else { %>
           <a class="btn btn-primary" href="<%= loginUrl %>">
@@ -46,7 +47,7 @@
 
   <main>
     <!-- ---------------- HERO ---------------- -->
-    <section class="hero lp-hero">
+    <section class="hero lp-hero lp-hero-v2">
       <div class="hero-glow" aria-hidden="true"></div>
       <div class="lp-hero-grid">
         <div class="lp-hero-copy">

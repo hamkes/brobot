@@ -34,7 +34,7 @@ module.exports = {
             '`/poll` — quick reaction polls',
             '`/rank` `/top` `/profile` — level cards & leaderboards (text, voice, credits, reps)',
             '`/roles` `/moveme` `/short` `/roll` — server tools',
-            '`/credits` `/daily` `/pay` `/rep` `/title` — economy & profile',
+            '`/credits` `/daily` `/pay` `/rep` `/title` — economy & profile (+ web store & personal dashboard)',
             '`/colors` `/color` — self-assignable colors',
             '`/stats` `/ticket-panel` — counters & tickets setup'
           ].join('\n')

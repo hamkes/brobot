@@ -55,6 +55,26 @@ the command files.
 - **Original presentation.** Rank/profile output uses BroBot's existing
   embed style and violet identity — no ProBot card artwork or layout.
 
+## v1.2 pass (2026-10-20) — personal dashboard, store, landing
+
+Requested after a side-by-side look at bot-site landings in this class:
+make BroBot's site *better*, with a similar modern feel — still 100%
+original code, copy and assets.
+
+| Gap (from the comparison) | v1.2 |
+|---|---|
+| BroBot's dashboard was admin-only; a member had no page of their own (ProBot-style sites show the member their Credits / Level / Rank / Reputation cards) | ✅ New `/my` personal dashboard: cards for credits, level, server rank, reputation, voice level + server picker |
+| No credits store — credits earned from `/daily` had nothing to buy | ✅ Original Credits Store on `/my`: 8 gradient profile backgrounds + 6 badges (`models/storeCatalog.js`), bought per-server with credits, equipped background + badges shown on `/profile` |
+| Leaderboards only existed as Discord commands | ✅ Top 100 web boards on `/my`: XP / richest / reputation, with best-effort username resolution and "you" highlighting |
+| Daily reward only claimable in Discord | ✅ Web claim button on `/my`; bot and web share one implementation (`bot/systems/economyService.js`) so the streak math can never drift |
+| Landing hero was a split layout | ✅ Centered hero (v2): pill, large gradient headline, dual CTAs, product mock below, live stats — BroBot's own copy in EN/AR |
+
+Verified: syntax + EJS compile clean, all 45 commands still load,
+8/8 new functional tests (service daily, bot daily via service, store
+buy / already-owned / insufficient-funds, equip owned / refuse unowned,
+`/profile` cosmetics, `/my` render), plus a live server smoke test
+(home renders the v2 hero, `/my` redirects to login when signed out).
+
 ## Still open (not in this pass)
 
 - Welcome **image-card rendering** (drawing the member's avatar/name onto

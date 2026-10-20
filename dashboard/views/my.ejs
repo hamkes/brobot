@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <%- include('partials/head', { title, description }) %>
+</head>
+<body class="landing-body">
+
+  <%- include('partials/nav', { loggedIn, loginUrl, inviteUrl, active }) %>
+
+  <main>
+    <section class="page-hero my-hero">
+      <img class="my-avatar" src="<%= user.avatar %>" alt="" width="84" height="84">
+      <h1 class="page-title"><span data-i18n="my_title">My Profile</span> — <%= user.globalName || user.username %></h1>
+      <% if (selected && selected.title) { %><p class="my-usertitle">✨ <%= selected.title %></p><% } %>
+      <p class="page-sub" data-i18n="my_sub">Your BroBot journey across your servers: credits, levels, reputation, leaderboards and the credits store.</p>
+
+      <% if (servers.length > 1) { %>
+        <form class="my-guildpicker" method="get" action="/my">
+          <label data-i18n="my_server_label" for="guildSelect">Server</label>
+          <select id="guildSelect" name="guild" onchange="this.form.submit()">
+            <% for (const s of servers) { %>
+              <option value="<%= s.guildId %>" <%= selected && s.guildId === selected.guildId ? 'selected' : '' %>><%= s.name %></option>
+            <% } %>
+          </select>
+        </form>
+      <% } %>
+    </section>
+
+    <% if (!selected) { %>
+      <section class="section page-section">
+        <div class="my-empty">
+          <h2 data-i18n="my_no_data">No BroBot activity yet</h2>
+          <p data-i18n="my_no_data_sub">Chat, join voice channels and use /daily in a server with BroBot, then come back — your cards, store and leaderboards will be here.</p>
+          <a class="btn btn-primary" href="<%= inviteUrl %>" target="_blank" rel="noopener noreferrer" data-i18n="invite_bot">Invite Bot</a>
+        </div>
+      </section>
+    <% } else { %>
+
+    <section class="section page-section">
+      <div class="my-cards">
+        <div class="my-card"><span class="my-card-emoji">💳</span><div><strong id="myCredits"><%= selected.credits.toLocaleString() %></strong><span data-i18n="my_credits">Credits</span></div></div>
+        <div class="my-card"><span class="my-card-emoji">🏆</span><div><strong><%= selected.level %></strong><span data-i18n="my_level">Level</span></div></div>
+        <div class="my-card"><span class="my-card-emoji">🎖️</span><div><strong><%= selected.rank ? '#' + selected.rank.toLocaleString() : '—' %></strong><span data-i18n="my_rank">Server Rank</span></div></div>
+        <div class="my-card"><span class="my-card-emoji">⭐</span><div><strong><%= selected.reps.toLocaleString() %></strong><span data-i18n="my_reps">Reputation</span></div></div>
+        <div class="my-card"><span class="my-card-emoji">🎙️</span><div><strong><%= selected.voiceLevel %></strong><span data-i18n="my_voice_level">Voice Level</span></div></div>
+        <div class="my-card"><span class="my-card-emoji">🌐</span><div><strong><%= totals.serverCount %></strong><span data-i18n="my_servers">Servers with activity</span></div></div>
+      </div>
+
+      <div class="my-daily">
+        <div>
+          <strong data-i18n="my_daily">Daily reward</strong>
+          <span>🔥 <span data-i18n="my_streak">Streak</span>: <%= daily.streak %></span>
+        </div>
+        <% if (daily.claimed) { %>
+          <button class="btn btn-ghost" disabled data-i18n="my_claimed">Claimed today ✓</button>
+        <% } else { %>
+          <button class="btn btn-primary" id="dailyBtn" data-i18n="my_claim">Claim your daily reward</button>
+        <% } %>
+      </div>
+      <p class="my-status" id="myStatus" role="status"></p>
+    </section>
+
+    <section class="section page-section">
+      <h2 class="my-h2" data-i18n="my_store">Credits Store</h2>
+      <h3 class="my-h3" data-i18n="my_backgrounds">Profile backgrounds</h3>
+      <div class="store-grid">
+        <% for (const item of catalog.BACKGROUNDS) { %>
+          <% const owned = selected.ownedBackgrounds.includes(item.id); const equipped = selected.equippedBackground === item.id; %>
+          <div class="store-item">
+            <div class="store-preview" style="background: <%= item.css %>"></div>
+            <div class="store-meta"><strong><%= item.nameEn %></strong><span><%= item.price === 0 ? 'Free' : item.price.toLocaleString() + ' credits' %></span></div>
+            <% if (equipped) { %>
+              <button class="btn btn-ghost" disabled data-i18n="my_equipped">Equipped ✓</button>
+            <% } else if (owned) { %>
+              <button class="btn btn-primary store-equip" data-item="<%= item.id %>" data-i18n="my_equip">Equip</button>
+            <% } else { %>
+              <button class="btn btn-primary store-buy" data-item="<%= item.id %>" data-i18n="my_buy">Buy</button>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <h3 class="my-h3" data-i18n="my_badges">Profile badges</h3>
+      <div class="store-grid">
+        <% for (const item of catalog.BADGES) { %>
+          <% const owned = selected.ownedBadges.includes(item.id); %>
+          <div class="store-item">
+            <div class="store-badge"><%= item.emoji %></div>
+            <div class="store-meta"><strong><%= item.nameEn %></strong><span><%= item.price.toLocaleString() %> credits</span></div>
+            <% if (owned) { %>
+              <button class="btn btn-ghost" disabled data-i18n="my_owned">Owned ✓</button>
+            <% } else { %>
+              <button class="btn btn-primary store-buy" data-item="<%= item.id %>" data-i18n="my_buy">Buy</button>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="section page-section">
+      <h2 class="my-h2"><span data-i18n="my_leaderboards">Leaderboards</span> — <%= selected.name %></h2>
+      <div class="my-boards">
+        <% const renderBoard = (boardTitle, key, rows) => { %>
+          <div class="my-board">
+            <h3 class="my-h3" data-i18n="<%= key %>"><%= boardTitle %></h3>
+            <% if (!rows.length) { %><p class="my-board-empty">—</p><% } %>
+            <ol class="my-board-list">
+              <% for (const row of rows.slice(0, 100)) { %>
+                <li class="<%= row.isYou ? 'is-you' : '' %>"><span class="my-board-rank">#<%= row.rank %></span><span class="my-board-name"><%= row.name %><% if (row.isYou) { %> <em data-i18n="my_you">(you)</em><% } %></span><span class="my-board-detail"><%= row.detail %></span></li>
+              <% } %>
+            </ol>
+          </div>
+        <% }; %>
+        <% renderBoard('Top 100 by XP', 'my_top_xp', boards.xp); %>
+        <% renderBoard('Richest 100', 'my_top_credits', boards.credits); %>
+        <% renderBoard('Top 100 by Reputation', 'my_top_reps', boards.reps); %>
+      </div>
+    </section>
+
+    <% } %>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <% if (selected) { %>
+  <script>
+    (function () {
+      var guildId = <%- JSON.stringify(selected.guildId) %>;
+      var status = document.getElementById('myStatus');
+      function post(path, body) {
+        return fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ guildId: guildId }, body || {}))
+        }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); });
+      }
+      function reloadSoon(msg) { status.textContent = msg; setTimeout(function () { location.reload(); }, 900); }
+
+      var dailyBtn = document.getElementById('dailyBtn');
+      if (dailyBtn) dailyBtn.addEventListener('click', function () {
+        dailyBtn.disabled = true;
+        post('/api/me/daily').then(function (res) {
+          if (res.ok) reloadSoon('+' + res.j.reward.toLocaleString() + ' credits • streak ' + res.j.streak + ' 🔥');
+          else { status.textContent = res.j.error || 'error'; dailyBtn.disabled = false; }
+        });
+      });
+
+      document.querySelectorAll('.store-buy').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          btn.disabled = true;
+          post('/api/me/store/buy', { itemId: btn.dataset.item }).then(function (res) {
+            if (res.ok) reloadSoon('Purchased ✓');
+            else { status.textContent = res.j.error || 'error'; btn.disabled = false; }
+          });
+        });
+      });
+      document.querySelectorAll('.store-equip').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          btn.disabled = true;
+          post('/api/me/store/equip', { itemId: btn.dataset.item }).then(function (res) {
+            if (res.ok) reloadSoon('Equipped ✓');
+            else { status.textContent = res.j.error || 'error'; btn.disabled = false; }
+          });
+        });
+      });
+    })();
+  </script>
+  <% } %>
+</body>
+</html>
