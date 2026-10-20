@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Level, Economy } = require('../../db');
 const config = require('../../config');
 const { levelFromXp } = require('../../systems/leveling');
+const { findBackground, findBadge } = require('../../../models/storeCatalog');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -45,6 +46,17 @@ module.exports = {
       .setFooter({ text: `✨ Brobot • ${interaction.guild.name}` });
 
     if (title) embed.setDescription(`✨ *${title}*`);
+
+    const background = findBackground(economyDoc?.equippedBackground || 'default');
+    const badgeText = (economyDoc?.ownedBadges || [])
+      .map((id) => findBadge(id))
+      .filter(Boolean)
+      .map((b) => `${b.emoji} ${b.nameEn}`)
+      .join(' • ');
+    const cosmetics = [];
+    if (background) cosmetics.push({ name: '🎨 Background', value: background.nameEn, inline: true });
+    if (badgeText) cosmetics.push({ name: '🏅 Badges', value: badgeText, inline: false });
+    if (cosmetics.length) embed.addFields(...cosmetics);
 
     await interaction.editReply({ embeds: [embed] });
   }

@@ -9,7 +9,10 @@ const economySchema = new mongoose.Schema({
   lastRepAt: { type: Date, default: null },
   lastDailyAt: { type: Date, default: null },
   dailyStreak: { type: Number, default: 0 },
-  title: { type: String, default: '', maxlength: 80 }
+  title: { type: String, default: '', maxlength: 80 },
+  ownedBackgrounds: { type: [String], default: ['default'] },
+  equippedBackground: { type: String, default: 'default' },
+  ownedBadges: { type: [String], default: [] }
 }, { timestamps: true });
 
 economySchema.index({ guildId: 1, userId: 1 }, { unique: true });

@@ -26,6 +26,7 @@
         <span data-i18n="invite_bot">Invite Bot</span>
       </a>
       <% if (loggedIn) { %>
+        <a class="btn btn-ghost" href="/my" data-i18n="nav_my" class="<%= active === 'my' ? 'active' : '' %>">My Profile</a>
         <a class="btn btn-primary" href="/dashboard" data-i18n="open_dashboard">Open Dashboard</a>
       <% } else { %>
         <a class="btn btn-primary" href="<%= loginUrl %>">

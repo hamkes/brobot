@@ -1,7 +1,8 @@
 const express = require('express');
 const config = require('../../bot/config');
 const logger = require('../../bot/utils/logger');
-const { Guild, Warn, ModAction, DashLog, Level, Ticket, BotStatus } = require('../../bot/db');
+const { Guild, Warn, ModAction, DashLog, Level, Ticket, BotStatus, Economy } = require('../../bot/db');
+const economyService = require('../../bot/systems/economyService');
 const { isValidPrefix } = require('../../bot/utils/prefixCache');
 const { refreshSessionGuilds } = require('../utils/discordUser');
 
@@ -76,6 +77,59 @@ router.get('/me', (req, res) => {
     guilds: req.session.guilds || [],
     isOwner: config.owners.includes(req.session.user.id)
   });
+});
+
+/* ---------- Personal economy (v1.2): daily + credits store ----------
+   These act on the *signed-in user's own* economy records. The guildId
+   must be a server where that user actually has a record, so nobody can
+   act on a server they have never earned anything in. */
+
+function personalGuildId(req, res) {
+  const guildId = String(req.body?.guildId || '');
+  if (!/^\d{17,20}$/.test(guildId)) {
+    res.status(400).json({ error: 'invalid_guild_id' });
+    return null;
+  }
+  return guildId;
+}
+
+router.post('/me/daily', async (req, res) => {
+  try {
+    const guildId = personalGuildId(req, res);
+    if (!guildId) return;
+    const result = await economyService.claimDaily(guildId, req.session.user.id);
+    if (!result.ok) return res.status(409).json({ error: result.reason, nextClaimInSeconds: result.nextClaimInSeconds });
+    res.json(result);
+  } catch (err) {
+    logger.error(`POST /me/daily failed: ${err.message}`);
+    res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+router.post('/me/store/buy', async (req, res) => {
+  try {
+    const guildId = personalGuildId(req, res);
+    if (!guildId) return;
+    const result = await economyService.buyItem(guildId, req.session.user.id, String(req.body?.itemId || ''));
+    if (!result.ok) return res.status(400).json({ error: result.reason, balance: result.balance, price: result.price });
+    res.json({ ok: true, balance: result.balance, item: { id: result.item.id, kind: result.item.kind } });
+  } catch (err) {
+    logger.error(`POST /me/store/buy failed: ${err.message}`);
+    res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+router.post('/me/store/equip', async (req, res) => {
+  try {
+    const guildId = personalGuildId(req, res);
+    if (!guildId) return;
+    const result = await economyService.equipBackground(guildId, req.session.user.id, String(req.body?.itemId || ''));
+    if (!result.ok) return res.status(400).json({ error: result.reason });
+    res.json({ ok: true, item: { id: result.item.id, kind: 'background' } });
+  } catch (err) {
+    logger.error(`POST /me/store/equip failed: ${err.message}`);
+    res.status(500).json({ error: 'internal_error' });
+  }
 });
 
 async function withBotPresence(guilds) {
