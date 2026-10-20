@@ -32,9 +32,9 @@ module.exports = {
             '`/ping` — bot latency',
             '`/avatar` `/userinfo` `/serverinfo` — info commands',
             '`/poll` — quick reaction polls',
-            '`/rank` `/top` `/profile` — level cards & leaderboards',
-            '`/roles` `/moveme` `/short` — server tools',
-            '`/credits` `/rep` — economy',
+            '`/rank` `/top` `/profile` — level cards & leaderboards (text, voice, credits, reps)',
+            '`/roles` `/moveme` `/short` `/roll` — server tools',
+            '`/credits` `/daily` `/pay` `/rep` `/title` — economy & profile',
             '`/colors` `/color` — self-assignable colors',
             '`/stats` `/ticket-panel` — counters & tickets setup'
           ].join('\n')

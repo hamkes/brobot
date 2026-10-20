@@ -73,6 +73,7 @@ const antiraidSchema = new mongoose.Schema({
 const levelingSchema = new mongoose.Schema({
   enabled: { type: Boolean, default: false },
   xpPerMessage: { type: Number, default: 15 },
+  voiceXpPerMinute: { type: Number, default: 10 },
   cooldown: { type: Number, default: 60 },
   announceChannelId: { type: String, default: null },
   stackRewards: { type: Boolean, default: true },

@@ -24,6 +24,12 @@ module.exports = {
     const filled = Math.min(10, Math.floor((progress / needed) * 10));
     const bar = '▰'.repeat(filled) + '▱'.repeat(10 - filled);
 
+    const voiceXp = record?.voiceXp || 0;
+    const voice = levelFromXp(voiceXp);
+    const voiceRank = voiceXp > 0
+      ? (await Level.countDocuments({ guildId: interaction.guild.id, voiceXp: { $gt: voiceXp } })) + 1
+      : null;
+
     const embed = new EmbedBuilder()
       .setColor(config.colors.primary)
       .setAuthor({ name: `${user.tag}`, iconURL: user.displayAvatarURL() })
@@ -32,7 +38,10 @@ module.exports = {
       .addFields(
         { name: '⭐ Total XP', value: xp.toLocaleString('en-US'), inline: true },
         { name: '📊 Server rank', value: `#${rank}`, inline: true },
-        { name: '💬 Messages', value: String(record?.totalMessages || 0), inline: true }
+        { name: '💬 Messages', value: String(record?.totalMessages || 0), inline: true },
+        { name: '🎙️ Voice Level', value: `**${voice.level}**${voiceRank ? ` • #${voiceRank}` : ''}`, inline: true },
+        { name: '🎧 Voice XP', value: voiceXp.toLocaleString('en-US'), inline: true },
+        { name: '⏱️ Voice time', value: `${(record?.totalVoiceMinutes || 0).toLocaleString('en-US')} min`, inline: true }
       )
       .setFooter({ text: '✨ Brobot • Leveling' });
 

@@ -322,6 +322,30 @@ Persistent giveaways with button entries, role/level requirements, rerolls and r
 - Active timers are restored on startup (`systems/giveaways.js`); overdue giveaways end immediately.
 - Winners are announced in the channel and the message embed is updated in place.
 - Requires the bot to have **Send Messages** + **Embed Links** in the target channel.
+## 💰 Economy & Voice Leveling (v1.1)
+
+Added after a feature-level gap analysis against ProBot-style bots
+(see [GAP_ANALYSIS.md](GAP_ANALYSIS.md)) — all original Brobot code and design.
+
+| Command | Description |
+|---|---|
+| `/daily` | Claim daily credits — one claim per UTC day; consecutive-day streaks add a growing bonus (base 500 + up to 250 random + streak bonus) |
+| `/pay user amount` | Transfer your credits to another member — atomic and balance-checked, balances can never go negative |
+| `/title set\|show\|clear` | Set a personal title (max 80 chars, links/pings stripped) shown on your `/profile` card |
+| `/roll [sides] [count]` | Roll dice (default 1 × d6, up to 25 × d1000) |
+
+- **Voice XP**: time in voice channels now earns XP too — `voiceXp` and
+  `totalVoiceMinutes` on the Level record, awarded when a member leaves or
+  switches channels at the guild's `leveling.voiceXpPerMinute` rate
+  (default 10 XP/min). Bots, the AFK channel and sessions under a minute
+  earn nothing.
+- **`/top` leaderboards**: new `type` option — `text` (default), `voice`,
+  `credits` or `reps`.
+- `/rank` and `/profile` now show voice level/time and the daily streak;
+  `/credits` shows your streak and points you at `/daily`.
+- Economy and levels stay **per-server** (Brobot's design), and `/daily`'s
+  streak bonus rewards regulars with no paid tiers.
+
 ## 📜 License
 
 MIT — have fun, and make your server awesome. ✨

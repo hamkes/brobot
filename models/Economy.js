@@ -6,7 +6,10 @@ const economySchema = new mongoose.Schema({
   credits: { type: Number, default: 0 },
   points: { type: Number, default: 0 },
   reps: { type: Number, default: 0 },
-  lastRepAt: { type: Date, default: null }
+  lastRepAt: { type: Date, default: null },
+  lastDailyAt: { type: Date, default: null },
+  dailyStreak: { type: Number, default: 0 },
+  title: { type: String, default: '', maxlength: 80 }
 }, { timestamps: true });
 
 economySchema.index({ guildId: 1, userId: 1 }, { unique: true });
