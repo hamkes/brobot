@@ -15,10 +15,14 @@ module.exports = {
     const doc = await Economy.findOne({ guildId: interaction.guild.id, userId: user.id }).lean();
     const credits = doc?.credits || 0;
 
+    const streak = doc?.dailyStreak || 0;
     const embed = new EmbedBuilder()
       .setColor(config.colors.primary)
       .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL({ size: 128 }) })
-      .setDescription(`💳 **${user.username}** has **${credits.toLocaleString()}** credits.`)
+      .setDescription(
+        `💳 **${user.username}** has **${credits.toLocaleString()}** credits.` +
+        (streak > 0 ? `\n🔥 Daily streak: **${streak}** day${streak === 1 ? '' : 's'} — claim more with \`/daily\`.` : '\nTip: claim free credits every day with `/daily`.')
+      )
       .setFooter({ text: '✨ Brobot • Economy' });
 
     await interaction.reply({ embeds: [embed] });

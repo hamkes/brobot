@@ -88,4 +88,70 @@ async function onLevelUp({ message, guild, member, level, announceChannelId, rew
   }
 }
 
-module.exports = { handleLeveling, xpForLevel, totalXpForLevel, levelFromXp };
+/**
+ * Voice XP (BroBot original — added in the v1.1 gap pass).
+ *
+ * Join/leave/switch timestamps are tracked in memory; when a member leaves
+ * a voice channel (or moves), the finished session is settled: whole
+ * minutes are stored on the Level record and converted to XP at the
+ * guild's `leveling.voiceXpPerMinute` rate. Sessions shorter than a
+ * minute, bots, and time in the guild's AFK channel earn nothing.
+ * A restart simply drops any open session — it never invents minutes.
+ */
+const voiceSessions = new Map(); // `${guildId}:${userId}` -> { joinedAt, channelId }
+
+function voiceSessionKey(guildId, userId) {
+  return `${guildId}:${userId}`;
+}
+
+function isCountableChannel(guild, channelId) {
+  return Boolean(channelId) && channelId !== guild.afkChannelId;
+}
+
+async function settleVoiceSession(guild, userId, joinedAt) {
+  const minutes = Math.floor((Date.now() - joinedAt) / 60000);
+  if (minutes < 1) return null;
+
+  const settings = await Guild.findOne({ guildId: guild.id });
+  if (!settings?.leveling?.enabled) return null;
+
+  const xpPerMinute = settings.leveling.voiceXpPerMinute ?? 10;
+  const gained = minutes * xpPerMinute;
+  if (gained <= 0) return null;
+
+  const record = await Level.findOneAndUpdate(
+    { guildId: guild.id, userId },
+    { $inc: { voiceXp: gained, totalVoiceMinutes: minutes } },
+    { upsert: true, new: true }
+  );
+  return { minutes, gained, voiceXp: record.voiceXp };
+}
+
+async function handleVoiceState(oldState, newState) {
+  try {
+    const guild = newState.guild || oldState.guild;
+    const member = newState.member || oldState.member;
+    if (!guild || !member || member.user?.bot) return;
+
+    const key = voiceSessionKey(guild.id, member.id);
+    const oldChannelId = oldState.channelId || null;
+    const newChannelId = newState.channelId || null;
+    if (oldChannelId === newChannelId) return; // mute/deafen updates etc.
+
+    if (oldChannelId && isCountableChannel(guild, oldChannelId)) {
+      const session = voiceSessions.get(key);
+      if (session && session.channelId === oldChannelId) {
+        voiceSessions.delete(key);
+        await settleVoiceSession(guild, member.id, session.joinedAt);
+      }
+    }
+
+    if (newChannelId && isCountableChannel(guild, newChannelId)) {
+      voiceSessions.set(key, { joinedAt: Date.now(), channelId: newChannelId });
+    }
+  } catch (err) {
+    logger.error(`handleVoiceState (leveling) failed: ${err.message}`);
+  }
+}
+
+module.exports = { handleLeveling, handleVoiceState, xpForLevel, totalXpForLevel, levelFromXp };
