@@ -80,6 +80,13 @@ const levelingSchema = new mongoose.Schema({
   rewards: {
     type: [{ level: Number, roleId: String }],
     default: []
+  },
+  noXpChannelIds: { type: [String], default: [] },
+  noXpRoleIds: { type: [String], default: [] },
+  announceMessage: { type: String, default: '' },
+  voiceRewards: {
+    type: [{ level: Number, roleId: String }],
+    default: []
   }
 }, { _id: false });
 

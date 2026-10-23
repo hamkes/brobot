@@ -436,13 +436,36 @@
     };
     (s.leveling.rewards || []).forEach((r) => rewardsEl.appendChild(buildReward(r)));
 
+    const voiceRewardsEl = UI.el(`<div data-voice-rewards></div>`);
+    (s.leveling.voiceRewards || []).forEach((r) => voiceRewardsEl.appendChild(buildReward(r)));
+
+    // NO-XP channels: checkbox picker over the non-voice channels,
+    // same [data-picker] mechanism as the role pickers (see UI.gather).
+    const noXpChannelsPicker = `
+      <div class="role-picker" data-picker="leveling.noXpChannelIds">
+        ${ctx.meta.channels.filter((c) => c.type !== 2).map((c) => `
+          <label class="role-option">
+            <input type="checkbox" value="${c.id}" ${(s.leveling.noXpChannelIds || []).includes(c.id) ? 'checked' : ''}>
+            #${UI.esc(c.name)}
+          </label>`).join('')}
+      </div>`;
+
     const body = `
       <div class="form-grid">
         <div class="full">${UI.toggleField('leveling.enabled', t('lv_enabled'), '', s.leveling.enabled)}</div>
         ${UI.numberField('leveling.xpPerMessage', t('lv_xp'), '5 - 100', s.leveling.xpPerMessage, 1, 200)}
         ${UI.numberField('leveling.cooldown', t('lv_cooldown'), '', s.leveling.cooldown, 0, 3600)}
         ${UI.channelSelect('leveling.announceChannelId', t('lv_announce'), ctx.meta.channels, s.leveling.announceChannelId, '', (c) => c.type !== 2)}
+        <div class="full">${UI.textareaField('leveling.announceMessage', t('lv_announce_msg'), t('lv_announce_msg_hint'), s.leveling.announceMessage || '')}</div>
         <div class="full">${UI.toggleField('leveling.stackRewards', t('lv_stack'), '', s.leveling.stackRewards)}</div>
+        <div class="full">
+          <p class="card-subtitle">${UI.esc(t('lv_noxp_channels'))}</p>
+          ${noXpChannelsPicker}
+        </div>
+        <div class="full">
+          <p class="card-subtitle">${UI.esc(t('lv_noxp_roles'))}</p>
+          ${UI.rolePicker('leveling.noXpRoleIds', ctx.meta.roles, s.leveling.noXpRoleIds)}
+        </div>
       </div>`;
 
     node.appendChild(UI.el(UI.card(t('lv_title'), '', body, UI.saveButton('leveling'))));
@@ -452,8 +475,16 @@
       `<button class="btn btn-ghost btn-sm" data-add-reward style="margin-top:12px">＋ ${UI.esc(t('lv_add_reward'))}</button>`,
       UI.saveButton('leveling-rewards'))));
 
+    node.appendChild(UI.el(UI.card(t('lv_voice_rewards'), t('lv_voice_rewards_desc'),
+      voiceRewardsEl.outerHTML +
+      `<button class="btn btn-ghost btn-sm" data-add-voice-reward style="margin-top:12px">＋ ${UI.esc(t('lv_add_reward'))}</button>`,
+      UI.saveButton('leveling-voice-rewards'))));
+
     const rewardsContainer = node.querySelector('[data-rewards]');
     node.querySelector('[data-add-reward]').addEventListener('click', () => rewardsContainer.appendChild(buildReward()));
+
+    const voiceRewardsContainer = node.querySelector('[data-voice-rewards]');
+    node.querySelector('[data-add-voice-reward]').addEventListener('click', () => voiceRewardsContainer.appendChild(buildReward()));
 
     bindSave(node, ctx, ['leveling'], null, 'leveling');
     node.querySelector('[data-save="leveling-rewards"]').addEventListener('click', async () => {
@@ -465,6 +496,20 @@
         .filter((r) => r.roleId);
       try {
         await patchSettings(ctx, { leveling: { rewards } });
+        UI.toast(t('msg_saved'));
+      } catch {
+        UI.toast(t('msg_error'), 'err');
+      }
+    });
+    node.querySelector('[data-save="leveling-voice-rewards"]').addEventListener('click', async () => {
+      const voiceRewards = [...voiceRewardsContainer.querySelectorAll('.list-row')]
+        .map((row) => ({
+          level: Number(row.querySelector('[data-role="level"]').value) || 0,
+          roleId: row.querySelector('[data-role="role"]').value
+        }))
+        .filter((r) => r.roleId);
+      try {
+        await patchSettings(ctx, { leveling: { voiceRewards } });
         UI.toast(t('msg_saved'));
       } catch {
         UI.toast(t('msg_error'), 'err');
