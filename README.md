@@ -362,6 +362,21 @@ Added after a feature-level gap analysis against ProBot-style bots
   CTAs, the product mock below and live stats — with Brobot's own
   bilingual (EN/AR) copy throughout.
 
+## 🏆 Leveling Plus (v1.3)
+
+From the REA feature-level study (see `GAP_ANALYSIS.md`) — again, all
+original Brobot code and design. 46 slash commands in total.
+
+- **NO-XP channels & roles**: pick channels and roles that earn no XP
+  (text or voice) on the dashboard leveling page.
+- **Custom level-up message**: your own announcement template with
+  placeholders (`{user.mention}`, `{level}`, `{server}`…); empty keeps
+  the built-in default.
+- **Voice role rewards**: roles granted when a member reaches a voice
+  level, honouring the same stacking setting as text rewards.
+- **`/reset`**: admins reset one member's text / voice / all XP, or the
+  whole server's — server-wide resets require `confirm: true`.
+
 ## 📜 License
 
 MIT — have fun, and make your server awesome. ✨

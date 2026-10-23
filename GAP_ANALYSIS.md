@@ -75,12 +75,30 @@ buy / already-owned / insufficient-funds, equip owned / refuse unowned,
 `/profile` cosmetics, `/my` render), plus a live server smoke test
 (home renders the v2 hero, `/my` redirects to login when signed out).
 
+## v1.3 pass (2026-10-23) — Leveling Plus
+
+Method note: this pass follows the REA feature-level study recorded in
+`~/workspace/brobot-dev/rea-probot/REA-FINDINGS.md` — REA analysed the
+public site bundle and public feature/command pages for **what** the
+features do. No third-party code, text, artwork or layouts were used;
+everything below is original BroBot code in the existing design.
+
+| # | Gap (from the study) | v1.3 |
+|---|---|---|
+| 1 | **No NO-XP controls.** Leveling feature lists in this class let admins exempt specific channels and roles from earning XP. BroBot granted XP everywhere leveling was on. | ✅ `leveling.noXpChannelIds` + `leveling.noXpRoleIds` on guild settings, enforced by one pure helper (`isXpBlocked`) in both the text path and voice-session settling; blocked messages still count toward `totalMessages`. Dashboard leveling page gets role + channel checkbox pickers. |
+| 2 | **Hardcoded level-up text.** BroBot had the announcement *channel* but the message itself was one fixed English string. | ✅ `leveling.announceMessage` template, rendered with the existing placeholder engine plus a new `{level}` variable (`buildLevelUpMessage`); empty keeps the built-in default. Editable on the dashboard with a variables hint. |
+| 3 | **Voice levels had no rewards** (carried as an open item since v1.2). | ✅ `leveling.voiceRewards` (`[{level, roleId}]`): when a settled voice session crosses a voice level, the unlocked roles are granted — all of them when stacking is on, otherwise only the highest — with the same bot-hierarchy and already-has-role guards as text rewards. Dashboard gets a matching Voice Rewards card. |
+| 4 | **No `/reset`.** Admins could *set* XP (`/setxp`, `/setlevel`) but had no clean way to wipe progress for one member or a whole server. | ✅ New `/reset` (46 commands total): a member's text / voice / all progress, refusing bots; or server-wide, which requires an explicit `confirm: true` and reports matched/modified counts. |
+
 ## Still open (not in this pass)
 
 - Welcome **image-card rendering** (drawing the member's avatar/name onto
   a generated image) — BroBot currently sends an embed with an optional
-  static image URL. Needs an image-rendering dependency decision.
-- Voice-level **role rewards** — voice XP is tracked and displayed, but
-  role rewards still trigger from text level only.
-- Reaction-role mode for self-roles — BroBot's panels use buttons and
-  select menus, which are the modern Discord pattern.
+  static image URL. Still pending an image-rendering dependency decision.
+- Reaction-role mode for self-roles — a minor item; BroBot's panels use
+  buttons and select menus, which are the modern Discord pattern.
+- **`setcolor`-style role recolouring** — reviewed in this pass and left
+  out: `/color` only *assigns* an existing colour role to the caller and
+  dashboard role editing does not recolour roles either, so there is
+  still no command that recolours an existing role by hex. Small open
+  item for a future pass.

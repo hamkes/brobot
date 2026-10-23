@@ -1,5 +1,6 @@
 const { Guild, Level } = require('../db');
 const logger = require('../utils/logger');
+const { buildPlaceholders, applyPlaceholders } = require('../utils/placeholders');
 
 /**
  * Leveling engine.
@@ -27,6 +28,54 @@ function levelFromXp(totalXp) {
   return { level, progress: remaining, needed: xpForLevel(level) };
 }
 
+/** Role ids of a member, tolerant of discord.js members and plain test doubles. */
+function roleIdsOf(member) {
+  if (!member) return [];
+  if (Array.isArray(member.roleIds)) return member.roleIds.map(String);
+  const roles = member.roles;
+  if (!roles) return [];
+  if (Array.isArray(roles)) return roles.map((r) => String(typeof r === 'string' ? r : r.id));
+  const cache = roles.cache || roles;
+  if (cache && typeof cache.keys === 'function') return [...cache.keys()].map(String);
+  if (Array.isArray(cache)) return cache.map((r) => String(typeof r === 'string' ? r : r.id));
+  return [];
+}
+
+function memberHasRole(member, roleId) {
+  if (!member?.roles) return false;
+  if (member.roles.cache && typeof member.roles.cache.has === 'function') return member.roles.cache.has(roleId);
+  if (typeof member.roles.has === 'function') return member.roles.has(roleId);
+  return roleIdsOf(member).includes(String(roleId));
+}
+
+/**
+ * Pure check: is XP blocked for this channel / member under the guild's
+ * leveling config? (v1.3 — NO-XP channels and NO-XP roles.)
+ */
+function isXpBlocked(levelingCfg, { channelId, roleIds } = {}) {
+  if (!levelingCfg) return false;
+  const blockedChannels = levelingCfg.noXpChannelIds || [];
+  if (channelId && blockedChannels.map(String).includes(String(channelId))) return true;
+  const blockedRoles = levelingCfg.noXpRoleIds || [];
+  if (!blockedRoles.length || !roleIds?.length) return false;
+  const blocked = new Set(blockedRoles.map(String));
+  return roleIds.some((id) => blocked.has(String(id)));
+}
+
+/**
+ * Render the level-up announcement. A guild may set its own template in
+ * `leveling.announceMessage` (placeholders + `{level}`); empty means the
+ * built-in BroBot default text below.
+ */
+function buildLevelUpMessage(cfg, guild, member, level) {
+  const template = cfg?.announceMessage;
+  if (typeof template === 'string' && template.trim()) {
+    const placeholders = buildPlaceholders(guild, member, { '{level}': level });
+    return applyPlaceholders(template, placeholders);
+  }
+  return `🎉 Congratulations ${member}, you reached **Level ${level}**!`;
+}
+
 async function handleLeveling(message) {
   try {
     if (!message.guild || message.author.bot || !message.content) return;
@@ -35,10 +84,17 @@ async function handleLeveling(message) {
     const settings = await Guild.findOne({ guildId: message.guild.id });
     if (!settings?.leveling?.enabled) return;
 
-    const { xpPerMessage = 15, cooldown = 60, announceChannelId, rewards = [], stackRewards = true } = settings.leveling;
+    const { xpPerMessage = 15, cooldown = 60, announceChannelId, rewards = [], stackRewards = true, announceMessage = '' } = settings.leveling;
 
     let record = await Level.findOne({ guildId: message.guild.id, userId: message.author.id });
     if (!record) record = await Level.create({ guildId: message.guild.id, userId: message.author.id });
+
+    // v1.3: NO-XP channels / roles earn nothing — the message still counts.
+    if (isXpBlocked(settings.leveling, { channelId: message.channel?.id, roleIds: roleIdsOf(message.member) })) {
+      record.totalMessages += 1;
+      await record.save();
+      return;
+    }
 
     const now = Date.now();
     if (record.lastMessageAt && now - new Date(record.lastMessageAt).getTime() < cooldown * 1000) {
@@ -59,20 +115,20 @@ async function handleLeveling(message) {
     await record.save();
 
     if (level > previousLevel) {
-      await onLevelUp({ message, guild: message.guild, member: message.member, level, announceChannelId, rewards, stackRewards });
+      await onLevelUp({ message, guild: message.guild, member: message.member, level, announceChannelId, rewards, stackRewards, announceMessage });
     }
   } catch (err) {
     logger.error(`handleLeveling failed: ${err.message}`);
   }
 }
 
-async function onLevelUp({ message, guild, member, level, announceChannelId, rewards, stackRewards }) {
+async function onLevelUp({ message, guild, member, level, announceChannelId, rewards, stackRewards, announceMessage }) {
   const channel = announceChannelId
     ? (guild.channels.cache.get(announceChannelId) || await guild.channels.fetch(announceChannelId).catch(() => null))
     : message.channel;
 
   if (channel?.isTextBased()) {
-    await channel.send(`🎉 Congratulations ${member}, you reached **Level ${level}**!`).catch(() => null);
+    await channel.send(buildLevelUpMessage({ announceMessage }, guild, member, level)).catch(() => null);
   }
 
   const unlocked = rewards.filter((r) => r.level <= level);
@@ -108,14 +164,18 @@ function isCountableChannel(guild, channelId) {
   return Boolean(channelId) && channelId !== guild.afkChannelId;
 }
 
-async function settleVoiceSession(guild, userId, joinedAt) {
+async function settleVoiceSession(guild, userId, joinedAt, opts = {}) {
   const minutes = Math.floor((Date.now() - joinedAt) / 60000);
   if (minutes < 1) return null;
 
   const settings = await Guild.findOne({ guildId: guild.id });
   if (!settings?.leveling?.enabled) return null;
 
-  const xpPerMinute = settings.leveling.voiceXpPerMinute ?? 10;
+  const cfg = settings.leveling;
+  // v1.3: NO-XP channels / roles earn no voice XP either.
+  if (isXpBlocked(cfg, { channelId: opts.channelId, roleIds: roleIdsOf(opts.member) })) return null;
+
+  const xpPerMinute = cfg.voiceXpPerMinute ?? 10;
   const gained = minutes * xpPerMinute;
   if (gained <= 0) return null;
 
@@ -124,6 +184,26 @@ async function settleVoiceSession(guild, userId, joinedAt) {
     { $inc: { voiceXp: gained, totalVoiceMinutes: minutes } },
     { upsert: true, new: true }
   );
+
+  // v1.3: voice-level role rewards, mirroring the text-level rewards.
+  const previousVoiceLevel = levelFromXp(record.voiceXp - gained).level;
+  const newVoiceLevel = levelFromXp(record.voiceXp).level;
+  if (newVoiceLevel > previousVoiceLevel && opts.member && (cfg.voiceRewards || []).length) {
+    const unlocked = cfg.voiceRewards.filter((r) => r.level <= newVoiceLevel);
+    const toApply = cfg.stackRewards !== false ? unlocked : (unlocked.length ? [unlocked[unlocked.length - 1]] : []);
+    for (const reward of toApply) {
+      let role = guild.roles?.cache?.get(reward.roleId) || null;
+      if (!role && typeof guild.roles?.fetch === 'function') {
+        role = await guild.roles.fetch(reward.roleId).catch(() => null);
+      }
+      if (!role) continue;
+      const botHighest = guild.members?.me?.roles?.highest?.position;
+      if (typeof botHighest === 'number' && botHighest <= role.position) continue;
+      if (memberHasRole(opts.member, role.id)) continue;
+      await opts.member.roles.add(role, 'BroBot • Voice level reward').catch(() => null);
+    }
+  }
+
   return { minutes, gained, voiceXp: record.voiceXp };
 }
 
@@ -142,7 +222,7 @@ async function handleVoiceState(oldState, newState) {
       const session = voiceSessions.get(key);
       if (session && session.channelId === oldChannelId) {
         voiceSessions.delete(key);
-        await settleVoiceSession(guild, member.id, session.joinedAt);
+        await settleVoiceSession(guild, member.id, session.joinedAt, { channelId: oldChannelId, member });
       }
     }
 
@@ -154,4 +234,4 @@ async function handleVoiceState(oldState, newState) {
   }
 }
 
-module.exports = { handleLeveling, handleVoiceState, xpForLevel, totalXpForLevel, levelFromXp };
+module.exports = { handleLeveling, handleVoiceState, settleVoiceSession, isXpBlocked, buildLevelUpMessage, xpForLevel, totalXpForLevel, levelFromXp };

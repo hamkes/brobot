@@ -45,7 +45,7 @@ module.exports = {
             '`/welcome` — welcome & goodbye messages',
             '`/autorole` — automatic roles for new members',
             '`/embed` — post the embed saved from the dashboard',
-            '`/setxp` `/setlevel` — manage member levels'
+            '`/setxp` `/setlevel` `/reset` — manage member levels'
           ].join('\n')
         }
       )
