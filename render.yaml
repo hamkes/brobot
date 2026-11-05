@@ -1,0 +1,53 @@
+# ============================================================
+# BroBot on Render — one free web service running BOTH the
+# Discord bot and the dashboard in a single container.
+#
+# Why one service: Render's free tier has NO background workers
+# (they need a paid plan from $7/month). The dashboard answers
+# HTTP, so a heartbeat ping (UptimeRobot, every 5 minutes) keeps
+# the whole service — bot included — awake.
+#
+# Free-tier limits to know before deploying:
+# - 750 free instance hours/month PER WORKSPACE, shared by every
+#   free service in that workspace. One always-on service uses
+#   ~720h/month, so a workspace that already runs other always-on
+#   services will run out of hours and Render suspends them all
+#   until next month. Pick the workspace with hours to spare.
+# - Free web services spin down after 15 minutes without inbound
+#   traffic; the heartbeat ping is what prevents that.
+#
+# Deploy: Render dashboard > New > Blueprint > connect this repo.
+# Secrets are NEVER in this file — set them in Render > Environment
+# (sync: false entries below are filled there, not in the YAML).
+# After the first deploy, if Render gave the service a different
+# URL than brobot.onrender.com, update DASHBOARD_URL below AND add
+# https://<that-url>/auth/callback to the Discord app's OAuth2
+# Redirects, then redeploy.
+# ============================================================
+services:
+  - type: web
+    name: brobot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node scripts/render.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DASHBOARD_URL
+        value: https://brobot.onrender.com
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: CLIENT_SECRET
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: DEV_GUILD_ID
+        sync: false
+      - key: OWNER_IDS
+        sync: false

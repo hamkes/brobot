@@ -377,6 +377,42 @@ original Brobot code and design. 46 slash commands in total.
 - **`/reset`**: admins reset one member's text / voice / all XP, or the
   whole server's — server-wide resets require `confirm: true`.
 
+## ☁️ Deploy on Render (bot + dashboard, free)
+
+One free web service runs both processes in a single container
+(`scripts/render.js` starts `bot/index.js` and
+`dashboard/server.js`). Render's free tier has no background
+workers, so this is the free way to keep the bot online: the
+dashboard answers HTTP, and a heartbeat ping keeps the whole
+service awake.
+
+1. **Blueprint**: Render dashboard → New → Blueprint → connect this
+   repo. The `render.yaml` at the root defines the `brobot` service
+   (free, `healthCheckPath: /health`).
+2. **Environment** (Render → Environment; secrets are never in the
+   YAML): `DISCORD_TOKEN`, `CLIENT_ID`, `CLIENT_SECRET`,
+   `MONGODB_URI` (must be Atlas — `localhost` does not exist on
+   Render), `SESSION_SECRET`, plus optional `DEV_GUILD_ID` /
+   `OWNER_IDS`. Set `DASHBOARD_URL` to the service's real URL
+   (default in the YAML: `https://brobot.onrender.com`).
+3. **Discord OAuth**: in the Developer Portal, add
+   `https://<your-service>.onrender.com/auth/callback` to the app's
+   OAuth2 Redirects — the login redirect must match `DASHBOARD_URL`
+   exactly.
+4. **Heartbeat**: in UptimeRobot add an HTTP(s) monitor for
+   `https://<your-service>.onrender.com/health`, interval 5 minutes.
+   Free services spin down after 15 minutes without traffic, so
+   this ping is what keeps the bot online.
+5. **Stop the old bot first**: if the same token is already running
+   elsewhere (e.g. BOT-H.net), stop it before the Render deploy
+   goes live — two instances with one token fight over the gateway.
+
+Free-tier limits: 750 instance hours/month **per workspace**, shared
+by every free service in that workspace — one always-on service
+uses ~720h/month, so a workspace that already runs other always-on
+services will run out of hours and Render suspends them all until
+next month. Pick the workspace with hours to spare.
+
 ## 📜 License
 
 MIT — have fun, and make your server awesome. ✨
