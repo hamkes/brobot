@@ -23,6 +23,12 @@ async function createApp() {
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
 
+  // Lightweight readiness probe for Render's health check and for
+  // UptimeRobot heartbeats. No session, no auth — but createApp()
+  // only runs after connectDatabase(), so a 200 here also means the
+  // database is reachable.
+  app.get('/health', (req, res) => res.json({ ok: true, service: 'brobot' }));
+
   app.use(morgan('dev', { stream: { write: (msg) => logger.info(`[web] ${msg.trim()}`) } }));
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ extended: true }));
